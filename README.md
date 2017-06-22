@@ -1,2 +1,2 @@
-# lucashuang.com
+# focushuang.com
 My personal website

@@ -1,0 +1,58 @@
+---
+layout: post
+title: Nitty gritty hints for iOS development
+date: 2015-07-18 00:36:59.000000000 -07:00
+type: post
+published: true
+status: publish
+categories: []
+tags: []
+meta:
+  publicize_linkedin_url: https://www.linkedin.com/updates?discuss=&scope=255005732&stype=M&topic=6027968833229180928&type=U&a=n8mk
+  _rest_api_published: '1'
+  _rest_api_client_id: "-1"
+  _publicize_job_id: '12832785645'
+  _publicize_done_external: a:1:{s:7:"twitter";a:1:{i:11867323;s:56:"https://twitter.com/focushuang/status/622203135918870528";}}
+  _publicize_done_11817520: '1'
+  _wpas_done_11867323: '1'
+  publicize_twitter_user: focushuang
+  _publicize_done_11817531: '1'
+  _wpas_done_11867334: '1'
+author:
+  login: xhuang0802
+  email: xhuang0802@gmail.com
+  display_name: xhuang0802
+  first_name: ''
+  last_name: ''
+---
+<p>I have been in iOS development for two full years and there are something you might want to keep in mind for making your app easier to <strong>DEVELOP </strong>and<strong> EXTEND</strong>. This post will be updated if there are many more in the future.</p>
+<ul>
+<li>General:
+<ul>
+<li>Organize your file structure under actual folder as well as Project Navigator in Xcode. Your coworkers will find it easier to understand the code responsibility.</li>
+<li>Do spend some time to research whether some complex functionalities have convenient and meaningful third-parties to accelerate development process but DO NOT overuse or use less reliable frameworks.</li>
+<li>Take advantage of code snippets provided by Xcode and create your own convenient code snippets for future development. Your own codebase is highly recommended!</li>
+</ul>
+</li>
+<li>UI-Layout:
+<ul>
+<li>If you use a storyboard, try to split view controllers based on modules or responsibilities. Like, you can move all view controllers belonging to user management to a specific area etc. Also, including XIB files is accepted if it will make the project modular. You can split it into multi storyboards from iOS9.</li>
+<li>Use <em>UIViewController</em> with <em>UITableView</em> instead of <em>UITableViewController</em> so that you have the flexibility to change UI elements inside this <em>UIViewController</em>. There has a great article talking about this issue: <a href="https://www.objc.io/issues/1-view-controllers/containment-view-controller/" target="_blank">Containment-View-Controller</a></li>
+</ul>
+</li>
+<li> Coding:
+<ul>
+<li>The naming convention has to be unified or taken good care in a specific manner so that your coworkers know what it does and its purpose.</li>
+<li>Create a file to handle key string and declare it as constant so that you can take advantage of auto-completion and avoid the typo. For instances, reuseIdentifier or segue identifier etc.</li>
+<li>Try to create your model classes just like creating library's APIs and consider critically what you should expose or not. For example, take advantage of public and private header declaration.</li>
+</ul>
+</li>
+<li>Codes management:
+<ul>
+<li>Get used to composing useful comments as well as git comments and sticking with clean coding style like the one from <a href="https://github.com/NYTimes/objective-c-style-guide" target="_blank">NYTimes Objective-C Style Guide</a>.</li>
+<li>Always filter out unnecessary lines inside a file or files when committing like <em>.xcuserstate</em>, <em>.xcbkptlist </em>because your coworkers do not necessarily to have these files.</li>
+<li>Take advantage of GUI tool like <a href="https://www.sourcetreeapp.com/" target="_blank">SourceTree</a> if you are not familiar with git command</li>
+</ul>
+</li>
+</ul>
+<p>These hints are my personal experience that will probably help you to reduce your time in iOS development. I have tried to finish a client app for two days ONLY. Hopefully, this will be helpful. Leave comments below and let's share what other iOS developers think.</p>

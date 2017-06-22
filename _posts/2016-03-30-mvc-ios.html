@@ -1,0 +1,217 @@
+---
+layout: post
+title: What is MVC in practice?
+date: 2016-03-30 03:00:55.000000000 -07:00
+type: post
+published: true
+status: publish
+categories: []
+tags: []
+meta:
+  _publicize_done_11817531: '1'
+  _wpas_done_11867334: '1'
+  _wp_old_slug: mvc
+  publicize_twitter_user: focushuang
+  _rest_api_client_id: "-1"
+  _rest_api_published: '1'
+  publicize_linkedin_url: https://www.linkedin.com/updates?discuss=&scope=255005732&stype=M&topic=6120778186805497856&type=U&a=NVew
+  _publicize_job_id: '21263265218'
+  _publicize_done_external: a:1:{s:7:"twitter";a:1:{i:11867323;s:56:"https://twitter.com/focushuang/status/715012488991879172";}}
+  _publicize_done_11817520: '1'
+  _wpas_done_11867323: '1'
+author:
+  login: xhuang0802
+  email: xhuang0802@gmail.com
+  display_name: xhuang0802
+  first_name: ''
+  last_name: ''
+---
+<p>What is MVC in iOS? - is one of the first questions that an interviewer might ask a potential iOS developer. MVC is one of the easiest concepts to comprehend. <span style="line-height:1.7;">Hence, I will not be introducing here. Instead, I'll be touching on what MVC really is in practice.</span></p>
+<h2>MVC in reality</h2>
+<p>Although an easy concept to grasp, a lot of developers seem to not get MVC right in practice. I have been an iOS consultant for three years and have been given opportunities to work on a variety of projects with approximately two dozen developers from around the world. I've also had the privilege to experience and see how other developers build iOS applications. Sadly, almost 90% of the projects made the similar mistakes of mixing views with controllers, which would result in truly massive view controllers. No jokes here! This mistake will most likely cost applications to have shorter lifecycles.</p>
+<h2>Why does Massive View Controller exist?</h2>
+<p>It is definitely not difficult to start developing iOS applications. One of the most intelligent IDEs, XCode, will handle almost every computer science philosophy for developers behind the scene. That's also what Apple tends to deliver: everyone can become an iOS application developer. Obviously, people do not necessarily need knowledge in computer science to become iOS developers. It is without a doubt that other developers will be more forgiving towards those without a background in computer science. "They can always learn." It is absolutely right.</p>
+<p>The tutorial is another critical cause. Due to the booming mobile application market, there are tons of tutorials out in the internet to help people build certain functionalities, this is awesome and I appreciate it A LOT! However, tutorial writers might think it's JUST for demonstration purposes and thus, see no need to stick with a certain software architecture pattern. I have observed that majority of the demo codes is on the controller part. But, some developers just follow the tutorial blindly. What comes next then? Welcome to the hell of the massive-view-controller world.</p>
+<h2>List of MVC in bad practice</h2>
+<ul>
+<li>Model describes data structure without ownership of the data</li>
+<li>Controller handles the part of model and view</li>
+<li>View holds nothing; worse if not being separated into a file</li>
+</ul>
+<h2>Codes comparison</h2>
+<p>I will be demonstrating the above three points from a demo application. At the same time, another demo application with same functionalities will show how it's supposed to be in MVC software architecture pattern.</p>
+<p>Basically, it's a simple iOS application that owns a table view. Each record represents a remote user. The table view can be used to add or delete users. When you click on one of a record, it will navigate you to another view controller that contains a clickable button and a view. You can tap on/off the button to change the state of this record. Let's rolling in!</p>
+<h4>Model describes data structure without ownership of the data</h4>
+<blockquote>
+<pre style="padding-left:30px;">// In Contacts.swift
+class Contact {
+    var name: String?
+    var url: String?
+    var connected: Bool
+    init(name: String, url: String) {
+        self.name = name
+        self.url = url
+        self.connected = false
+    }
+}
+</pre>
+</blockquote>
+<p>The codes above correctly describe the data structure of <em>Contact</em>, but what should I do if I want to add, retrieve and remove multiple <em>Contact</em> from <em>Contacts</em>? This piece normally goes to the controllers in tutorials which violate our rule. Below is my modification:</p>
+<blockquote>
+<pre style="padding-left:30px;">// In Contacts.swift
+class Contact {
+    private(set) var name: String?
+    private(set) var url: String?
+    private(set) var connected: Bool
+    
+    init(name: String, url: String) {
+        self.name = name
+        self.url = url
+        self.connected = false
+    }
+    
+    func reverseConnected() {
+        connected = !connected
+    }
+}
+
+class Contacts {
+    private static let sharedInstance = Contacts()
+    private var contacts = [Contact]()
+    
+    class func countContact() -&gt; Int {
+        return sharedInstance.contacts.count
+    }
+    
+    class func addContact(contact: Contact) {
+        sharedInstance.contacts.append(contact)
+    }
+    
+    class func getContactFromIndexPath(indexPath: NSIndexPath) -&gt; Contact? {
+        if 0 &gt; indexPath.row || indexPath.row &gt; sharedInstance.contacts.count {return nil}
+        return sharedInstance.contacts[indexPath.row]
+    }
+    
+    class func removeContactFromIndexPath(indexPath: NSIndexPath) -&gt; Contact? {
+        if 0 &gt; indexPath.row || indexPath.row &gt; sharedInstance.contacts.count {return nil}
+        let contact = sharedInstance.contacts[indexPath.row]
+        sharedInstance.contacts.removeAtIndex(indexPath.row)
+        return contact
+    }
+}
+</pre>
+</blockquote>
+<p><em>CountContact</em>, <em>addContact</em>, <em>getContactFromIndexPath</em> and <em>removeContactFromIndexPath</em> can be called directly from controllers. This way, controllers do not need to know anything about the model.</p>
+<h4>Controller handles the part of model and view</h4>
+<blockquote>
+<pre>// PublishViewController.swift
+var contact: Contact? // it's okay to cache a local variable
+@IBOutlet weak var mineView: UIView!
+@IBOutlet weak var connectButton: UIButton!
+
+// style logic is held by vc
+// which we don't recommend here
+private func updateConnectButton() {
+    if let contact = contact {
+        if contact.connected {
+            connectButton.setTitle("DISCONNECT WITH \(contact.name!)", forState: .Normal)
+            connectButton.setTitleColor(UIColor.redColor(), forState: .Normal)
+            mineView.layer.borderColor = UIColor.redColor().CGColor
+        }
+        else {
+            connectButton.setTitle("CONNECT WITH \(contact.name!)", forState: .Normal)
+            connectButton.setTitleColor(UIColor.blueColor(), forState: .Normal)
+            mineView.layer.borderColor = UIColor.clearColor().CGColor
+        }
+    }
+}
+</pre>
+</blockquote>
+<blockquote>
+<pre>// In MainViewControllerViewController.swift
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -&gt; UITableViewCell {
+    let cell = tableView.dequeueReusableCellWithIdentifier("MainViewTableViewCellIdentifier")!
+    let label = cell.viewWithTag(1000) as! UILabel
+    label.textColor = UIColor.grayColor()
+    if 0 &gt; indexPath.row || indexPath.row &gt; contacts.count {
+        return cell
+    }
+        
+    // contacts is data structure held by the vc
+    // which don't recommend here
+    if let name = contacts[indexPath.row].name {
+        label.text = name
+    }
+    else {
+        label.text = "Unknown"
+    }
+    return cell
+}
+</pre>
+</blockquote>
+<p>The code above looks fine and it's working. What if you have more than ten UI elements to configure in a table view cell? Perhaps you have different kinds of cells? Or perhaps, you will need to change view appearance under some situations? If so, the controller<em> </em>will generate a large piece of codes for sure. How about doing it this way:</p>
+<blockquote>
+<pre>// PublishView.swift
+// this class view property of PublishViewController
+@IBOutlet weak var mineView: UIView!
+@IBOutlet weak var connectButton: UIButton!
+private func updateConnectButton(contact: Contact) {
+    if let contact = contact {
+        if contact.connected {
+            connectButton.setTitle("DISCONNECT WITH \(contact.name!)", forState: .Normal)
+            connectButton.setTitleColor(UIColor.redColor(), forState: .Normal)
+            mineView.layer.borderColor = UIColor.redColor().CGColor
+        }
+        else {
+            connectButton.setTitle("CONNECT WITH \(contact.name!)", forState: .Normal)
+            connectButton.setTitleColor(UIColor.blueColor(), forState: .Normal)
+            mineView.layer.borderColor = UIColor.clearColor().CGColor
+        }
+    }
+}
+</pre>
+</blockquote>
+<blockquote>
+<pre style="padding-left:30px;">// In MainViewControllerViewController.swift
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -&gt; UITableViewCell {
+    let cell = tableView.dequeueReusableCellWithIdentifier(MainViewTableViewCellIdentifier.Normal.rawValue) as! MainViewTableViewCell
+    let contact = Contacts.getContactFromIndexPath(indexPath)
+    cell.updateCell(contact) // MainViewTableCell holds style logic
+    return cell
+}
+</pre>
+</blockquote>
+<p>When codes get changed, you need only to concentrate on <em>getContactFromIndexPath,</em> <em>updateCell</em>. As for <em>PublishView</em>, we put the styling logic in the view part so we can focus on this piece of codes when the design is changed.</p>
+<h4>View holds nothing; worse if not being separated into a file</h4>
+<p>Instead, I will create another file called <em>MainViewTableViewCell.swift</em> to hold styling logic. It's all about the SEPARATION. Here's something we should put it in regarding the cell:</p>
+<blockquote>
+<pre>// MainViewTableViewCell.swift
+class MainViewTableViewCell: UITableViewCell {
+    @IBOutlet weak var titleLabel: UILabel!
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        titleLabel.textColor = UIColor.grayColor()
+    }
+    func updateCell(contact: Contact?) {
+        if let contact = contact,
+            let name = contact.name {
+            titleLabel?.text = name
+        }
+        else {
+            titleLabel?.text = "Unknown"
+        }
+    }
+}
+</pre>
+</blockquote>
+<h2>You make it</h2>
+<p>The projects are available to download from the links below so you have a general idea of the differences:<br />
+<a href="https://www.dropbox.com/home?preview=MVC-Demo.zip" target="_blank">MVC-Demo</a><br />
+<a href="https://www.dropbox.com/s/uw0r1fr6rqqmx3e/MVC-Demo-Finish.zip?dl=0">MVC-Demo-Finish</a></p>
+<p>That's it. In short, these are two main points I am suggesting developers to achieve:</p>
+<ul>
+<li>Clean responsibility of each part and better separation</li>
+<li>Ease of maintainability and testability</li>
+<li>Think before you write and Cheers!</li>
+</ul>
+<p>Thank you for taking the time to read this! Please let me know your thoughts on this article. Press the like or share buttons if you like it so that others can read it too :)</p>
