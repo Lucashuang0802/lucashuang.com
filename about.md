@@ -4,15 +4,14 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+- Being passionate on software development since high school
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+- Four years iOS experience development for personal or enterprise applications
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+- Love Swift since it launched from 2014
 
+- Being obsessed with seeing great Mac applications to improve Apple ecosystem
 
-[jekyll-organization]: https://github.com/jekyll
+- Developing backend application is also my another career pursuit and would like to acquire backends' skills from any ways
+
+- Care about education and health care
